@@ -1,12 +1,29 @@
-import React, {Component} from 'react';
-import {View, Text} from 'react-native';
-class App extends Component {
-  render() {
-    return (
-      <View>
-        <Text>haizz</Text>
-      </View>
-    );
-  }
-}
+import React from 'react';
+import {View, Text, TouchableOpacity} from 'react-native';
+
+const App = () => (
+  <View>
+    <Text>Chọn số tiền và kỳ hạn</Text>
+    <View style={{backgroundColor: 'red', height: 30}}></View>
+    <Text>Số vay: </Text>
+    <View style={{backgroundColor: 'green', height: 30}}></View>
+    <Text>Kỳ hạn: </Text>
+    <Text>Lãi suất: </Text>
+    <View style={{flexDirection: 'row'}}>
+      <Text>name </Text>
+      <View style={{backgroundColor: 'gray', height: 50, width: 50}} />
+    </View>
+    <TouchableOpacity
+      style={{
+        backgroundColor: 'orange',
+        width: 120,
+        height: 50,
+        marginTop: 300,
+        alignSelf: 'center',
+      }}>
+      <Text>Đăng ký vay</Text>
+    </TouchableOpacity>
+  </View>
+);
+
 export default App;

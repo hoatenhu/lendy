@@ -2,6 +2,7 @@ const colors = {
   transparent: 'transparent',
   orginal: '#222C65',
   blue: '#243B80',
+  fadeBlue: '#243B804d',
   lightBlue: '#169BD7',
   black: '#000000e0',
   white: '#fff',

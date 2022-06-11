@@ -1,6 +1,6 @@
-import { Dimensions, Platform } from 'react-native'
+import {Dimensions, Platform} from 'react-native';
 
-const { width, height } = Dimensions.get('window')
+const {width, height} = Dimensions.get('screen');
 
 // Used via Metrics.baseMargin
 const metrics = {
@@ -12,8 +12,10 @@ const metrics = {
   tripleBaseMargin: 30,
   quadrupleBaseMargin: 40,
   quintupleBaseMargin: 50,
+  screenWidth: width,
+  screenHeight: height,
 
-  navBarHeight: Platform.OS === 'ios' ? 64 : 54
-}
+  navBarHeight: Platform.OS === 'ios' ? 64 : 54,
+};
 
-export default metrics
+export default metrics;

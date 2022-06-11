@@ -40,9 +40,9 @@ export const getOfferSuccess = (
   
 
 /* ------------- Hookup Reducers To Types ------------- */
-export { Types }
+export const AmountTypes = Types
 export const reducer = createReducer(INITIAL_STATE, {
-  GET_OFFER_REQUEST: getOfferRequest,
-  GET_OFFER_SUCCESS: getOfferSuccess,
-  GET_OFFER_FAILURE: getOfferFailure,
+  [Types.GET_OFFER_REQUEST]: getOfferRequest,
+  [Types.GET_OFFER_SUCCESS]: getOfferSuccess,
+  [Types.GET_OFFER_FAILURE]: getOfferFailure,
 })

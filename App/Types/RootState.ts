@@ -1,10 +1,10 @@
 import { AppState } from './AppTypes'
-import { AuthState, UserState } from './AmountTypes'
+import { AmoutState, UserState } from './AmountTypes'
 export type FetchingError = null | string
 
 export type RootState = {
   app: AppState
-  auth: AuthState
+  amount: AmoutState
   user: UserState
 }
 

@@ -1,8 +1,9 @@
 // @ts-nocheck
 import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { configureStore } from '@reduxjs/toolkit'
 import R from 'ramda'
 import { createLogger } from 'redux-logger'
-import { composeWithDevTools } from 'redux-devtools-extension'
+import { composeWithDevTools } from '@redux-devtools/extension'
 
 import createSagaMiddleware from 'redux-saga'
 

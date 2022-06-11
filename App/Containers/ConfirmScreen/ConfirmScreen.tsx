@@ -92,7 +92,7 @@ const ConfirmScreen = () => {
           />
         </View>
         <View style={styles.inputWrapper}>
-          <Text>Số điện thoại</Text>
+          <Text style={{fontFamily: 'roboto'}}>Số điện thoại</Text>
           <Text>:</Text>
           <TextInput
             value={phone}

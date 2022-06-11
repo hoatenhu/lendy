@@ -4,7 +4,7 @@ import { put, call, takeLatest } from 'redux-saga/effects'
 import UserApi from '../Services/UserApi'
 
 // Redux
-import UserActions, { Types as UserTypes } from '../Redux/UserRedux'
+import UserActions, { UserTypes } from '../Redux/UserRedux'
 
 // Functions
 import {

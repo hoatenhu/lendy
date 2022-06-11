@@ -15,10 +15,14 @@ import {AppStackType} from './Type/AppNavigationType';
 const AppStack = createStackNavigator<AppStackType>();
 
 const AppNavigation = () => {
+  console.log('AppNavigation');
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef} onStateChange={screenTracking}>
-        <AppStack.Navigator>
+        <AppStack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}>
           <AppStack.Screen name="Main" component={MainNavigator} />
         </AppStack.Navigator>
       </NavigationContainer>

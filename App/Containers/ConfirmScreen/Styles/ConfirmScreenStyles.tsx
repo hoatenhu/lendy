@@ -1,10 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {
-  ApplicationStyles,
-  Colors,
-  Metrics,
-  TypographyStyles,
-} from '../../../Themes';
+import {ApplicationStyles, Colors, TypographyStyles} from '../../../Themes';
 
 export default StyleSheet.create({
   container: {
@@ -40,6 +35,20 @@ export default StyleSheet.create({
     tintColor: Colors.gray1,
     width: 12,
     height: 12,
+  },
+  backButton: {
+    position: 'absolute',
+    top: -7,
+    left: -4,
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 1,
+  },
+  arrowLeft: {
+    transform: [{rotate: '180deg'}],
+    tintColor: Colors.blue,
+    width: 20,
+    height: 20,
   },
   nameInput: {
     flex: 1,

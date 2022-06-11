@@ -15,11 +15,6 @@ export const appReducer = combineReducers({
 })
 
 export const rootReducer = (state: any, action: any) => {
-  if (action.type === 'SIGN_OUT_SUCCESS') {
-    state = {
-      app: state.app
-    }
-  }
   return appReducer(state, action)
 }
 

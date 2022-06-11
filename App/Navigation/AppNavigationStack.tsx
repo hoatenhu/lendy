@@ -16,7 +16,13 @@ const MainStack = createStackNavigator<MainStackType>();
 
 const MainNavigator = () => {
   return (
-    <MainStack.Navigator>
+    <MainStack.Navigator
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: true,
+        gestureResponseDistance: 0.5,
+      }}
+      initialRouteName="HomeScreen">
       <MainStack.Screen name={'HomeScreen'} component={HomeScreen} />
       <MainStack.Screen name={'ConfirmScreen'} component={ConfirmScreen} />
     </MainStack.Navigator>

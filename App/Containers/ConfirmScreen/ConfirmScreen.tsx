@@ -12,19 +12,35 @@ import {
 import Modal from 'react-native-modal';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import styles from './Styles/ConfirmScreenStyles';
+import {useNavigation} from '@react-navigation/native';
 
-const fakeData = [
-  1, 2, 3, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 3, 4, 5,
-  6, 7, 8, 9,
-];
+const fakeData = {
+  total: 10,
+  provinces_list: [
+    'An Giang',
+    'Bắc Giang',
+    'Bắc Kạn',
+    'Bạc Liêu',
+    'Bắc Ninh',
+    'Bà Rịa - Vũng Tàu',
+    'Bến Tre',
+    'Bình Định',
+    'Bình Dương',
+    'Bình Phước',
+  ],
+};
 
 const ConfirmScreen = () => {
+  const {total, provinces_list} = fakeData;
+
   const [name, setName] = useState<string>('Te');
   const [phone, setPhone] = useState<string>('');
   const [nationId, setNationId] = useState<string>('');
   const [province, setProvince] = useState<string>('');
   const [monthlyIncome, setMonthlyIncome] = useState<string>('');
   const [isModalVisible, setModalVisible] = useState(false);
+
+  const navigation = useNavigation<any>();
 
   const handleChangeName = (value: string) => {
     setName(value);
@@ -46,10 +62,24 @@ const ConfirmScreen = () => {
     setModalVisible(!isModalVisible);
   };
 
+  const handlePressGoBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Xác nhận thông tin</Text>
+        <TouchableOpacity
+          delayPressIn={0}
+          style={styles.backButton}
+          onPress={handlePressGoBack}>
+          <Image
+            style={styles.arrowLeft}
+            source={require('../../Assets/Icons/right-arrow.png')}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.content}>
         <View style={styles.inputWrapper}>
@@ -127,7 +157,7 @@ const ConfirmScreen = () => {
         />
         <View style={{height: 360, backgroundColor: 'green'}}>
           <FlatList
-            data={fakeData}
+            data={provinces_list}
             renderItem={({item, index}) => (
               <Text key={`month_key${index}`}>{item}</Text>
             )}

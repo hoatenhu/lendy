@@ -12,15 +12,35 @@ import Modal from 'react-native-modal';
 import styles from './Styles/HomeScreenStyles';
 import {Colors} from '../../Themes';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {useNavigation} from '@react-navigation/native';
+import {range} from 'ramda';
 
-const fakeData = [
-  1, 2, 3, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 3, 4, 5,
-  6, 7, 8, 9,
-];
+const fakeData = {
+  min_amount: 30000000,
+  max_amount: 100000000,
+  min_tenor: 6,
+  max_tenor: 18,
+  interest_rate: 19.99,
+  bank: {
+    name: 'Vietcombank',
+    logo: 'https://www.vietcombank.com.vn/images/logo30.png',
+  },
+};
 
 const HomeScreen = () => {
-  const [amount, setAmount] = useState<number>(3);
+  const {min_amount, max_amount, min_tenor, max_tenor, interest_rate, bank} =
+    fakeData;
+  const {name, logo} = bank;
+  const minAmount = Math.floor(min_amount / 1e6);
+  const maxAmount = Math.floor(max_amount / 1e6);
+  const a = range(min_tenor, max_tenor);
+
+  const [amount, setAmount] = useState<number>(
+    Math.floor((minAmount + maxAmount) / 2),
+  );
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
+
+  const navigation = useNavigation<any>();
 
   const handePull = (value: any) => {
     setAmount(value);
@@ -28,6 +48,10 @@ const HomeScreen = () => {
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+
+  const handlePressContinue = () => {
+    navigation.navigate('ConfirmScreen');
   };
 
   return (
@@ -41,8 +65,9 @@ const HomeScreen = () => {
           <Text style={styles.amountValueText}>{`${amount}.000.000`}</Text>
         </View>
         <Slider
-          minimumValue={3}
-          maximumValue={20}
+          animateTransitions
+          minimumValue={minAmount}
+          maximumValue={maxAmount}
           step={1}
           thumbStyle={styles.sliderThumb}
           trackStyle={styles.sliderTrack}
@@ -52,8 +77,8 @@ const HomeScreen = () => {
           onValueChange={handePull}
         />
         <View style={styles.amountWrapper}>
-          <Text style={styles.minMaxAmountText}>3tr</Text>
-          <Text style={styles.minMaxAmountText}>20tr</Text>
+          <Text style={styles.minMaxAmountText}>{`${minAmount}tr`}</Text>
+          <Text style={styles.minMaxAmountText}>{`${maxAmount}tr`}</Text>
         </View>
         <View style={styles.tenor}>
           <Text style={styles.tenorTitle}>Thời hạn</Text>
@@ -72,17 +97,18 @@ const HomeScreen = () => {
         <View style={styles.interestRateWrapper}>
           <Text style={styles.interestRateTextTittle}>Lãi suất / năm</Text>
           <Text style={{position: 'absolute', left: 98}}>:</Text>
-          <Text style={styles.interestRateTextDetail}>19,9 %</Text>
+          <Text
+            style={styles.interestRateTextDetail}>{`${interest_rate}%`}</Text>
         </View>
         <View style={styles.bankWrapper}>
           <Text style={styles.bankInfo}>Ngân hàng</Text>
           <Text style={{position: 'absolute', left: 98}}>:</Text>
-          <Text style={styles.bankNameText}>Vietcombank</Text>
+          <Text style={styles.bankNameText}>{name}</Text>
         </View>
         <Image
           style={styles.bankLogo}
           source={{
-            uri: 'https://www.vietcombank.com.vn/images/logo30.png',
+            uri: logo,
           }}
           resizeMode="contain"
         />
@@ -91,7 +117,7 @@ const HomeScreen = () => {
       <TouchableOpacity
         delayPressIn={0}
         style={styles.buttonWrapper}
-        onPress={() => {}}>
+        onPress={handlePressContinue}>
         <Text style={styles.buttonText}>Tiếp tục</Text>
       </TouchableOpacity>
       <Modal
@@ -112,7 +138,7 @@ const HomeScreen = () => {
         />
         <View style={{height: 360, backgroundColor: 'green'}}>
           <FlatList
-            data={fakeData}
+            data={a}
             renderItem={({item, index}) => (
               <Text key={`month_key${index}`}>{item}</Text>
             )}

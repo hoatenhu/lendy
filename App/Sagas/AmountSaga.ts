@@ -29,6 +29,23 @@ export function* getOfferSaga(): any {
   }
 }
 
+export function* getWeatherSaga(action: any): any {
+  const {position} = action
+  try {
+    setNetworkActivityStatusBar(true);
+    const response = yield call(amountApi.getWeather, position);
+    setNetworkActivityStatusBar();
+    if (response.ok && response.status === 200) {
+      yield put(AmountActions.getWeatherSuccess(response.data));
+    } else {
+      yield put(AmountActions.getWeatherFailure(getErrorAPI(response)));
+    }
+  } catch (error: any) {
+    yield put(AmountActions.getWeatherFailure(error.message));
+  }
+}
+
 export default function* AmountSaga() {
   yield takeLatest(AmountTypes.GET_OFFER_REQUEST, getOfferSaga);
+  yield takeLatest(AmountTypes.GET_WEATHER_REQUEST, getWeatherSaga);
 }

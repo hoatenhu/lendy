@@ -1,151 +1,167 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
+  PixelRatio,
   TouchableOpacity,
   Image,
   Pressable,
   FlatList,
+  Animated,
+  Easing,
+  Button,
+  ScrollView,
 } from 'react-native';
-import {Slider} from '@miblanchard/react-native-slider';
-import Modal from 'react-native-modal';
-import styles from './Styles/HomeScreenStyles';
-import {Colors} from '../../Themes';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {useNavigation} from '@react-navigation/native';
-import {range} from 'ramda';
+import {useDispatch, useSelector} from 'react-redux';
 
-const fakeData = {
-  min_amount: 30000000,
-  max_amount: 100000000,
-  min_tenor: 6,
-  max_tenor: 18,
-  interest_rate: 19.99,
-  bank: {
-    name: 'Vietcombank',
-    logo: 'https://www.vietcombank.com.vn/images/logo30.png',
-  },
+import styles from './Styles/WeatherHomeStyles';
+import icons from '../../Themes/Image';
+
+import AmountActions from '../../Redux/AmountRedux';
+
+import {getCurrentLocation} from '../../Functions/LocationFunction';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {RootState} from '../../Types/RootState';
+import {usePrevious} from '../../Hooks';
+
+const spinValue = new Animated.Value(0);
+const defaultPosition = {
+  lat: -20.98848161007417,
+  lng: 55.29550896863393,
 };
 
 const HomeScreen = () => {
-  const {min_amount, max_amount, min_tenor, max_tenor, interest_rate, bank} =
-    fakeData;
-  const {name, logo} = bank;
-  const minAmount = Math.floor(min_amount / 1e6);
-  const maxAmount = Math.floor(max_amount / 1e6);
-  const a = range(min_tenor, max_tenor);
+  const dispatch = useDispatch();
+  const [currentPosition, setCurrentPosition] = useState<any>(defaultPosition);
 
-  const [amount, setAmount] = useState<number>(
-    Math.floor((minAmount + maxAmount) / 2),
+  const {weatherData, fetchingGetWeather, errorGetWeather} = useSelector(
+    (state: RootState) => state.amount,
   );
-  const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const preFetchingGetWeather = usePrevious(fetchingGetWeather);
 
-  const navigation = useNavigation<any>();
+  const fetchingDone = preFetchingGetWeather && !fetchingGetWeather;
 
-  const handePull = (value: any) => {
-    setAmount(value);
+  // handle data
+  const temp = Math.round(weatherData?.list[0].main.temp - 273);
+  const location = weatherData?.city.name;
+
+  const tempDays = weatherData?.list.map((item: any) => ({
+    day: new Date(item.dt * 1e3).toLocaleString('en-us', {weekday: 'long'}),
+    temp: Math.round(item.main.temp - 273),
+  }));
+  let pre = {} as any;
+  tempDays?.forEach(function (ob: any) {
+    pre[ob.day] =
+      pre[ob.day] === undefined
+        ? ob
+        : Array.isArray(pre[ob.day])
+        ? pre[ob.day].concat([ob])
+        : [pre[ob.day]].concat([ob]);
+  });
+  const avgPre = Object.values(pre);
+  const avgTempDays = avgPre.map((item: any) => {
+    const initialValue = 0;
+    const sumWithInitial = Array.isArray(item)
+      ? item.reduce(
+          (previousValue: any, currentValue: any) =>
+            previousValue + currentValue.temp,
+          initialValue,
+        )
+      : item.temp;
+    return {
+      day: item.day ?? item[0].day,
+      temp: Math.round(sumWithInitial / item.length),
+    };
+  });
+  const now = new Date().toLocaleString('en-us', {
+    weekday: 'long',
+  });
+  const data =
+    now === avgTempDays?.[0]?.day
+      ? avgTempDays.slice(1, 5)
+      : avgTempDays.slice(0, 4);
+  const getLocation = () => {
+    getCurrentLocation((position: {lat: number; lng: number}) => {
+      setCurrentPosition(position);
+      dispatch(AmountActions.getWeatherRequest(position ?? currentPosition));
+    });
   };
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+  const handleRetry = () => {
+    getLocation();
+    Animated.timing(spinValue, {
+      toValue: 1,
+      duration: 3000,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start();
   };
 
-  const handlePressContinue = () => {
-    navigation.navigate('ConfirmScreen');
-  };
+  useEffect(() => {
+    getLocation();
+    Animated.loop(
+      Animated.timing(spinValue, {
+        toValue: 1,
+        duration: 3000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    ).start();
+  }, []);
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 0.5],
+    outputRange: ['0deg', '360deg'],
+  });
 
   return (
-    <KeyboardAwareScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Chọn khoản vay</Text>
-      </View>
-      <View style={styles.content}>
-        <Text>Số tiền vay</Text>
-        <View>
-          <Text style={styles.amountValueText}>{`${amount}.000.000`}</Text>
-        </View>
-        <Slider
-          animateTransitions
-          minimumValue={minAmount}
-          maximumValue={maxAmount}
-          step={1}
-          thumbStyle={styles.sliderThumb}
-          trackStyle={styles.sliderTrack}
-          minimumTrackTintColor={Colors.blue}
-          maximumTrackTintColor={Colors.fadeBlue}
-          value={amount}
-          onValueChange={handePull}
+    <View
+      style={[
+        styles.container,
+        !fetchingDone && styles.fetchingContainer,
+        errorGetWeather && styles.errorContainer,
+      ]}>
+      {fetchingDone ? (
+        errorGetWeather ? (
+          <View style={styles.errorContent}>
+            <Text style={styles.errorText}>
+              Something went wrong at our end
+            </Text>
+            <TouchableOpacity
+              delayPressIn={0}
+              style={styles.errorButton}
+              onPress={handleRetry}>
+              <Text style={styles.errorButtonText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            <View style={styles.todayWrapper}>
+              <Text style={styles.temperature}>{`${temp}°`}</Text>
+              <Text style={styles.location}>{location}</Text>
+            </View>
+            <Animated.View elevation={15} style={styles.next4DaysWrapper}>
+              <FlatList
+                style={styles.content}
+                showsVerticalScrollIndicator={false}
+                data={data}
+                renderItem={({item, index}) => (
+                  <View style={styles.weatherItem}>
+                    <Text style={styles.itemText}>{item.day}</Text>
+                    <Text style={styles.itemText}>{`${item.temp} C`}</Text>
+                  </View>
+                )}
+              />
+            </Animated.View>
+          </>
+        )
+      ) : (
+        <Animated.Image
+          style={[styles.loadingIcon, {transform: [{rotate: spin}]}]}
+          source={icons.icon}
         />
-        <View style={styles.amountWrapper}>
-          <Text style={styles.minMaxAmountText}>{`${minAmount}tr`}</Text>
-          <Text style={styles.minMaxAmountText}>{`${maxAmount}tr`}</Text>
-        </View>
-        <View style={styles.tenor}>
-          <Text style={styles.tenorTitle}>Thời hạn</Text>
-          <TouchableOpacity
-            delayPressIn={0}
-            style={styles.selectMonthButton}
-            onPress={toggleModal}>
-            <Text style={styles.month}>9 tháng</Text>
-            <Image
-              style={styles.arrowRight}
-              source={require('../../Assets/Icons/right-arrow.png')}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.interestRateWrapper}>
-          <Text style={styles.interestRateTextTittle}>Lãi suất / năm</Text>
-          <Text style={{position: 'absolute', left: 98}}>:</Text>
-          <Text
-            style={styles.interestRateTextDetail}>{`${interest_rate}%`}</Text>
-        </View>
-        <View style={styles.bankWrapper}>
-          <Text style={styles.bankInfo}>Ngân hàng</Text>
-          <Text style={{position: 'absolute', left: 98}}>:</Text>
-          <Text style={styles.bankNameText}>{name}</Text>
-        </View>
-        <Image
-          style={styles.bankLogo}
-          source={{
-            uri: logo,
-          }}
-          resizeMode="contain"
-        />
-      </View>
-
-      <TouchableOpacity
-        delayPressIn={0}
-        style={styles.buttonWrapper}
-        onPress={handlePressContinue}>
-        <Text style={styles.buttonText}>Tiếp tục</Text>
-      </TouchableOpacity>
-      <Modal
-        isVisible={isModalVisible}
-        useNativeDriver
-        hideModalContentWhileAnimating
-        animationOutTiming={10}
-        backdropTransitionInTiming={0}
-        backdropTransitionOutTiming={0}
-        animationIn={'fadeIn'}
-        animationOut={'fadeOut'}>
-        <Pressable
-          style={{
-            flex: 1,
-            backgroundColor: 'red',
-          }}
-          onPress={toggleModal}
-        />
-        <View style={{height: 360, backgroundColor: 'green'}}>
-          <FlatList
-            data={a}
-            renderItem={({item, index}) => (
-              <Text key={`month_key${index}`}>{item}</Text>
-            )}
-          />
-        </View>
-      </Modal>
-    </KeyboardAwareScrollView>
+      )}
+    </View>
   );
 };
 

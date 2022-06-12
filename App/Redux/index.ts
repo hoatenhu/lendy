@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { createStore, combineReducers, applyMiddleware } from 'redux'
+import {createStore, combineReducers, applyMiddleware } from 'redux'
 import { configureStore } from '@reduxjs/toolkit'
-import R from 'ramda'
+import R, * as _ from 'ramda'
 import { createLogger } from 'redux-logger'
 import { composeWithDevTools } from '@redux-devtools/extension'
 
@@ -16,6 +16,11 @@ export const appReducer = combineReducers({
 })
 
 export const rootReducer = (state: any, action: any) => {
+  if (action.type === 'SIGN_OUT_SUCCESS') {
+    state = {
+      app: state.app
+    }
+  }
   return appReducer(state, action)
 }
 
@@ -37,7 +42,7 @@ const initStore = () => {
   ]
   const reduxLogger = createLogger({
     predicate: (getState, { type }) =>
-      USE_LOGGING && R.not(R.contains(type, loggingBlacklist)),
+      USE_LOGGING && R.not(R.includes(type, loggingBlacklist)),
     duration: true,
     colors: {
       title: () => 'red',

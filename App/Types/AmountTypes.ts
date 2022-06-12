@@ -3,9 +3,12 @@ import { Error } from './RootState'
 
 export type AmoutState = {
   offerData: any
-
   fetchingGetOffer: boolean
   errorGetOffer: Error | null
+
+  fetchingGetWeather: boolean,
+  errorGetWeather: Error | null,
+  weatherData: any
 }
 
 export type UserState = {

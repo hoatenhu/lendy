@@ -10,7 +10,6 @@ import store from '../Redux';
 import RootContainer from './RootContainer';
 
 const App = () => {
-  console.log('App');
   return (
     <Provider store={store}>
       <RootContainer />

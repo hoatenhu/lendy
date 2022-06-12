@@ -1,25 +1,32 @@
-const images = {
-  // eyeHidden: require('@/Assets/Icons/eye-hidden.png'),
-  // eyeShow: require('@/Assets/Icons/eye.png'),
-  // male: require('@/Assets/Icons/male.png'),
-  // female: require('@/Assets/Icons/female.png'),
-  // back: require('@/Assets/Icons/back.png'),
-  // menu: require('@/Assets/Icons/menu.png'),
-  // info: require('@/Assets/Icons/info.png'),
-  // phone: require('@/Assets/Icons/phone-call.png'),
-  // product: require('@/Assets/Icons/product.png'),
-  // edit: require('@/Assets/Icons/editing.png'),
-  // delete: require('@/Assets/Icons/delete.png'),
-  // search: require('@/Assets/Icons/search.png'),
-  // defaultImage: require('@/Assets/Icons/default-image.png'),
-  // shop: require('@/Assets/Icons/shop.png'),
-  // user: require('@/Assets/Icons/user.png'),
-  // appLogo: require('@/Assets/Icons/logo.png'),
-  // exit: require('@/Assets/Icons/exit.png'),
-  // downArrow: require('@/Assets/Icons/downArrow.png'),
-  // add: require('@/Assets/Icons/add.png'),
-  // tick: require('@/Assets/Icons/tick.png'),
-  // email: require('@/Assets/Icons/email.png')
-}
+import {PixelRatio} from 'react-native';
 
-export default images
+const type = PixelRatio.get();
+const images = {
+  mdpiLoading: require('../Assets/Icons/drawable-mdpi/ic_loading.png'),
+  hdpiLoading: require('../Assets/Icons/drawable-ldpi/ic_loadingl.png'),
+  xhdpiLoading: require('../Assets/Icons/drawable-xhdpi/ic_loading.png'),
+  xxhdpiLoading: require('../Assets/Icons/drawable-xxhdpi/ic_loading.png'),
+  xxxhpiLoading: require('../Assets/Icons/drawable-xxxhdpi/ic_loading.png'),
+};
+
+const getRequire = (type: number) => {
+  if (type <= 1.5) {
+    return images.mdpiLoading;
+  }
+  if (type <= 2) {
+    return images.hdpiLoading;
+  }
+  if (type <= 3) {
+    return images.xhdpiLoading;
+  }
+  if (type <= 3.5) {
+    return images.xxhdpiLoading;
+  }
+  return images.xxxhpiLoading;
+};
+
+const icons = {
+  icon: getRequire(type),
+};
+
+export default icons;

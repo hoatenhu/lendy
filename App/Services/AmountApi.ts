@@ -2,7 +2,7 @@ import apisauce from 'apisauce'
 import ApiConfig from '../Config/ApiConfig'
 
 const baseURL = ApiConfig.baseURL 
-const URL = ({lat, lng}: any) => `forecast?lat=${lat}&lon=${lng}&appid=cee606701cb8d19ce5d4d0257d952975kkk`
+const URL = ({lat, lng}: any) => `forecast?lat=${lat}&lon=${lng}&appid=cee606701cb8d19ce5d4d0257d952975`
 const create = () => {
   const api = apisauce.create({
     baseURL,

@@ -1,41 +1,37 @@
-import { Alert, Platform } from 'react-native'
+import {Alert, Platform} from 'react-native';
 import Geolocation, {
   GeoPosition,
-  GeoError
-} from 'react-native-geolocation-service'
+  GeoError,
+} from 'react-native-geolocation-service';
 import {
   PERMISSIONS,
   RESULTS,
   check,
   request,
-  openSettings
-} from 'react-native-permissions'
-
-
-let watchId: any = null
+  openSettings,
+} from 'react-native-permissions';
 
 type Position = {
-  lat: number
-  lng: number
-}
+  lat: number;
+  lng: number;
+};
 
-type SettingType = 'location'
+type SettingType = 'location';
 
 const AlertOpenSettingContent = {
   location: {
     title: 'titleLocationPermission',
-    message: 'messageLocationPermission'
-  }
-}
+    message: 'messageLocationPermission',
+  },
+};
 
 export function openSettingsApp() {
-  openSettings().catch(() => console.log('cannot open settings'))
+  openSettings().catch(() => console.log('cannot open settings'));
 }
-
 
 export function openSettingsAppWithAlert(settingKey?: SettingType) {
   if (settingKey) {
-    const { title, message } = AlertOpenSettingContent[settingKey]
+    const {title, message} = AlertOpenSettingContent[settingKey];
     Alert.alert(
       title,
       message,
@@ -43,84 +39,81 @@ export function openSettingsAppWithAlert(settingKey?: SettingType) {
         {
           text: 'Cancel',
           onPress: () => console.log('Cancel Pressed'),
-          style: 'destructive'
+          style: 'destructive',
         },
         {
           text: 'Settings',
-          onPress: openSettingsApp
-        }
+          onPress: openSettingsApp,
+        },
       ],
-      { cancelable: false }
-    )
+      {cancelable: false},
+    );
   } else {
-    openSettingsApp()
+    openSettingsApp();
   }
 }
 
 const permitPermission = (
   keyPermission: any,
   callback: any,
-  settingKey?: any
+  settingKey?: any,
 ) => {
-  
   if (keyPermission) {
     check(keyPermission)
-      .then((result) => {
-        console.log(result)
+      .then(result => {
+        console.log(result);
         switch (result) {
           case RESULTS.BLOCKED:
-            openSettingsAppWithAlert(settingKey)
-            break
+            openSettingsAppWithAlert(settingKey);
+            break;
           case RESULTS.DENIED:
-            request(keyPermission).then((response) => {
+            request(keyPermission).then(response => {
               if (response === RESULTS.GRANTED) {
-                callback()
+                callback();
               }
-            })
-            break
+            });
+            break;
           case RESULTS.GRANTED:
-            callback()
-            break
+            callback();
+            break;
           case RESULTS.LIMITED:
-            callback()
-            break
+            callback();
+            break;
           default:
-            break
+            break;
         }
       })
-      .catch((error) => {
-        console.log(error)
-      })
+      .catch(error => {
+        console.log(error);
+      });
   }
-}
+};
 
 export const getCurrentLocation = (callback: (position: Position) => void) => {
-  
   checkLocationPermission(() => {
     Geolocation.getCurrentPosition(
       (positionResult: GeoPosition) => {
-        const { longitude, latitude } = positionResult.coords
-        callback({ lat: latitude, lng: longitude })
+        const {longitude, latitude} = positionResult.coords;
+        callback({lat: latitude, lng: longitude});
       },
       (error: GeoError) => {
-        console.log(error)
+        console.log(error);
       },
       {
         enableHighAccuracy: false,
         timeout: 15000,
-        maximumAge: 10000
-      }
-    )
-  })
-}
+        maximumAge: 10000,
+      },
+    );
+  });
+};
 
 export function checkLocationPermission(callback: () => void) {
-  
-  let keyPermission: any = null
+  let keyPermission: any = null;
   if (Platform.OS === 'ios') {
-    keyPermission = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+    keyPermission = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
   } else {
-    keyPermission = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
+    keyPermission = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
   }
-  permitPermission(keyPermission, callback, 'location')
+  permitPermission(keyPermission, callback, 'location');
 }

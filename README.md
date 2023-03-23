@@ -1,4 +1,4 @@
-# Chefclub-v2 Repository
+# Lendy
 
 ## Requirements
 
